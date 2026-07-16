@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#141a17">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Microciclo MTB">
+<title>Microciclo MTB/XC — mobile</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#141a17; --bg-raise:#1c2521; --bg-card:#1f2925; --line:#33413a;
+    --text:#eae7dd; --text-dim:#93a19a; --text-faint:#5f6d66;
+    --z-rest:#5f7d68; --z-endurance:#3f7ca6; --z-tempo:#d9a441;
+    --z-threshold:#c97a3b; --z-hard:#b6423a; --z-gym:#8072a8;
+    --font-display:'Big Shoulders Display',sans-serif;
+    --font-body:'IBM Plex Sans',sans-serif;
+    --font-mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);}
+  body{padding-bottom:60px;font-size:16px;}
+  .wrap{padding:0 14px;}
+
+  .hero{background:var(--bg-raise);border-bottom:1px solid var(--line);padding:20px 14px 16px 14px;}
+  .eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin:0 0 6px 0;}
+  .hero h1{font-family:var(--font-display);font-weight:800;font-size:32px;line-height:1;margin:0 0 10px 0;}
+  .readout{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .cell{border:1px solid var(--line);border-radius:4px;padding:8px 10px;background:var(--bg-card);}
+  .cell .k{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);}
+  .cell .v{font-family:var(--font-mono);font-size:16px;margin-top:2px;}
+
+  /* sticky day nav */
+  .nav{position:sticky;top:0;z-index:10;display:flex;gap:4px;overflow-x:auto;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--line);}
+  .nav a{flex:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-mono);font-size:12px;font-weight:600;color:rgba(0,0,0,.6);text-decoration:none;}
+
+  h2.section-title{font-family:var(--font-display);font-weight:700;font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-dim);margin:26px 0 10px 0;}
+
+  .callout{margin:16px 0;border:1px solid var(--line);border-left:3px solid var(--z-threshold);background:var(--bg-card);border-radius:0 4px 4px 0;padding:12px 14px;font-size:13.5px;color:var(--text-dim);}
+  .callout b{color:var(--text);}
+
+  details.day{margin-top:12px;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg-card);}
+  details.day[open] summary{border-bottom:1px solid var(--line);}
+  summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:10px;}
+  summary::-webkit-details-marker{display:none;}
+  summary .zone-chip{width:12px;height:12px;border-radius:50%;flex:none;}
+  summary .txt{flex:1;}
+  summary .date{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);}
+  summary h3{font-family:var(--font-display);font-size:20px;margin:0;font-weight:700;}
+  summary .chev{font-family:var(--font-mono);color:var(--text-faint);font-size:12px;}
+
+  .day-content{padding:14px 16px 18px 16px;}
+  .tagline{font-size:13px;color:var(--text-dim);margin:0 0 14px 0;}
+  .col-label{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin:14px 0 8px 0;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px;}
+  th{text-align:left;font-family:var(--font-mono);font-weight:500;font-size:10px;text-transform:uppercase;color:var(--text-faint);padding:4px 6px 6px 0;border-bottom:1px solid var(--line);}
+  td{padding:7px 6px 7px 0;border-bottom:1px solid rgba(51,65,58,.5);}
+  tr:last-child td{border-bottom:none;}
+  td.num{font-family:var(--font-mono);color:var(--text-dim);}
+  .note-line{font-size:13px;color:var(--text-dim);border-top:1px dashed var(--line);padding-top:10px;margin-top:6px;}
+  .note-line b{color:var(--text);}
+  .no-session{font-size:13px;color:var(--text-faint);font-style:italic;}
+
+  .extra-block{border:1px solid var(--line);border-radius:6px;background:var(--bg-card);padding:16px;margin-bottom:14px;}
+  .extra-block h4{font-family:var(--font-display);font-size:18px;margin:0 0 10px 0;}
+  .stat-tile{border:1px solid var(--line);border-radius:4px;padding:9px 11px;margin-bottom:8px;}
+  .stat-tile .k{font-family:var(--font-mono);font-size:9.5px;text-transform:uppercase;color:var(--text-faint);}
+  .stat-tile .v{font-family:var(--font-mono);font-size:14px;margin-top:2px;}
+  footer{margin-top:30px;padding-top:14px;border-top:1px solid var(--line);font-size:10.5px;color:var(--text-faint);font-family:var(--font-mono);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="eyebrow">13-19 luglio 2026</p>
+  <h1>MTB/XC</h1>
+  <div class="readout">
+    <div class="cell"><div class="k">Focus</div><div class="v">Livata 26/07</div></div>
+    <div class="cell"><div class="k">Percorso</div><div class="v">40km · 1100D+</div></div>
+    <div class="cell"><div class="k">FTP</div><div class="v">245W</div></div>
+    <div class="cell"><div class="k">Peso</div><div class="v">69kg</div></div>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="#lun" style="background:var(--z-rest);">LUN</a>
+  <a href="#mar" style="background:var(--z-threshold);">MAR</a>
+  <a href="#mer" style="background:var(--z-gym);">MER</a>
+  <a href="#gio" style="background:var(--z-tempo);">GIO</a>
+  <a href="#ven" style="background:var(--z-gym);opacity:.75;">VEN</a>
+  <a href="#sab" style="background:var(--z-hard);">SAB</a>
+  <a href="#dom" style="background:var(--z-rest);opacity:.6;">DOM</a>
+</nav>
+
+<div class="wrap">
+  <div class="callout"><b>Regola —</b> no gambe pesanti prima delle chiave · no metabolico venerdì · sabato qualità, non massacro.</div>
+
+  <details class="day" id="lun">
+    <summary><span class="zone-chip" style="background:var(--z-rest);"></span><span class="txt"><div class="date">LUN 13/07</div><h3>Z2 + forza leggera</h3></span><span class="chev">▾</span></summary>
+    <div class="day-content">
+      <p class="tagline">Rigenerante. No DOMS, no gambe vere.</p>
+      <div class="col-label">🚲 Bici</div>
+      <table><tr><th>Fase</th><th>Durata</th><th>Zona</th></tr>
+      <tr><td>Warm-up</td><td class="num">10-15'</td><td class="num">Z1</td></tr>
+      <tr><td>Centrale</td><td class="num">50-65'</td><td class="num">Z2 bassa</td></tr>
+      <tr><td>Defaticamento</td><td class="num">10'</td><td class="num">facile</td></tr></table>
+      <div class="col-label">🏋 Palestra — straight set</div>
+      <table><tr><th>Esercizio</th><th>Serie</th><th>Riposo</th></tr>
+      <tr><td>Trap bar</td><td class="num">2-3×4, 80-100kg</td><td class="num">2-3'</td></tr>
+      <tr><td>Bulgarian split</td><td class="num">2×5/lato</td><td class="num">90"</td></tr>
+      <tr><td>Leg curl</td><td class="num">2×10</td><td class="num">60-90"</td></tr>
+      <tr><td>Calf raise</td><td class="num">2×12</td><td class="num">60"</td></tr>
+      <tr><td>Core + spalla</td><td class="num">2 giri</td><td class="num">60-90"</td></tr></table>
+      <div class="col-label">🍽 Nutrizione</div>
+      <table><tr><th>Momento</th><th>Cosa</th><th>g</th></tr>
+      <tr><td>Colazione</td><td>4-5 fette bisc. + marmellata + banana + yogurt greco 150g</td><td class="num">70-90</td></tr>
+      <tr><td>Durante</td><td>Mezza borraccia NRGY90 o acqua</td><td class="num">30-40/h</td></tr>
+      <tr><td>Post</td><td>Whey + fette con miele</td><td class="num">50-70</td></tr>
+      <tr><td>Pranzo</td><td>Pasta/riso 80-100g + pollo + pane</td><td class="num">80-100</td></tr>
+      <tr><td>Cena</td><td>Patate 250g + pesce/uova</td><td class="num">50-70</td></tr></table>
+      <div class="note-line">Target: <b>280-330g CHO</b> · <b>115-125g PRO</b> · 2.2-2.8L</div>
+    </div>
+  </details>
+
+  <details class="day" id="mar">
+    <summary><span class="zone-chip" style="background:var(--z-threshold);"></span><span class="txt"><div class="date">MAR 14/07</div><h3>Over/Under</h3></span><span class="chev">▾</span></summary>
+    <div class="day-content">
+      <p class="tagline">3×10 marathon se non brillante · +30' Z2 extra. Niente palestra.</p>
+      <div class="col-label">🚲 Bici</div>
+      <table><tr><th>Fase</th><th>Durata</th><th>Watt</th></tr>
+      <tr><td>Warm-up</td><td class="num">25-30'</td><td class="num">progressivo</td></tr>
+      <tr><td>Over/Under</td><td class="num">3×10'</td><td class="num">216-225+245-257W</td></tr>
+      <tr><td>Recupero</td><td class="num">6'</td><td class="num">120-160W</td></tr>
+      <tr><td>Finale</td><td class="num">20-40'</td><td class="num">Z2</td></tr>
+      <tr><td>Extra volume</td><td class="num">+30'</td><td class="num">Z2</td></tr></table>
+      <p class="no-session">Palestra: nessuna.</p>
+      <div class="col-label">🍽 Nutrizione</div>
+      <table><tr><th>Momento</th><th>Cosa</th><th>g</th></tr>
+      <tr><td>Colazione</td><td>6 fette bisc. + marmellata + banana + yogurt greco 170g</td><td class="num">80-100</td></tr>
+      <tr><td>Pre-ride</td><td>Banana o 2-3 datteri</td><td class="num">20-30</td></tr>
+      <tr><td>Durante</td><td>1 borraccia NRGY90/h + gel se serve</td><td class="num">~90/h</td></tr>
+      <tr><td>Post</td><td>Whey + fette con miele</td><td class="num">60-80</td></tr>
+      <tr><td>Pranzo</td><td>Pasta/riso 100-110g + carne + pane</td><td class="num">90-110</td></tr></table>
+      <div class="note-line">Target: <b>350-420g CHO</b> · <b>115-125g PRO</b> · 2.5-3.2L</div>
+    </div>
+  </details>
+
+  <details class="day" id="mer">
+    <summary><span class="zone-chip" style="background:var(--z-gym);"></span><span class="txt"><div class="date">MER 15/07</div><h3>Upper + spalla</h3></span><span class="chev">▾</span></summary>
+    <div class="day-content">
+      <p class="tagline">Tapis leggero + circuito. Zero interferenza bici.</p>
+      <div class="col-label">🚲 Tapis</div>
+      <table><tr><td>20-30'</td><td class="num">Z1/Z2, 8.5-9.5km/h</td></tr></table>
+      <div class="col-label">🏋 Circuito × 3 giri</div>
+      <table><tr><th>Esercizio</th><th>Reps/Carico</th><th>Riposo</th></tr>
+      <tr><td>Rematore</td><td class="num">8-10, 18-24kg/man</td><td class="num">30-45"</td></tr>
+      <tr><td>Chest press/push-up</td><td class="num">8-10</td><td class="num">30-45"</td></tr>
+      <tr><td>Face pull</td><td class="num">12-15, 7.5-15kg</td><td class="num">30"</td></tr>
+      <tr><td>Lat neutra</td><td class="num">8-10, 40-55kg</td><td class="num">30-45"</td></tr>
+      <tr><td>Pulley basso</td><td class="num">10, 35-50kg</td><td class="num">30-45"</td></tr></table>
+      <p class="note-line" style="border:none;">Riposo tra giri: <b>90-120"</b>. Poi finisher: core 3 serie + spalla 2-3 serie, 45-60" riposo.</p>
+      <div class="col-label">🍽 Nutrizione</div>
+      <table><tr><th>Momento</th><th>Cosa</th><th>g</th></tr>
+      <tr><td>Colazione</td><td>4 fette bisc. + marmellata + yogurt greco 150g</td><td class="num">50-70</td></tr>
+      <tr><td>Pranzo</td><td>Pasta/riso 70-80g + bresaola/prosciutto o pollo</td><td class="num">70-90</td></tr>
+      <tr><td>Spuntino</td><td>Banana + yogurt greco 150g</td><td class="num">20-30</td></tr>
+      <tr><td>Cena</td><td>Patate 200g o pane 80g + pesce/uova/carne</td><td class="num">70-90</td></tr></table>
+      <div class="note-line">Target: <b>220-260g CHO</b> · <b>115-130g PRO</b> · 2.2-2.8L</div>
+    </div>
+  </details>
+
+  <details class="day" id="gio">
+    <summary><span class="zone-chip" style="background:var(--z-tempo);"></span><span class="txt"><div class="date">GIO 16/07</div><h3>Sweet Spot</h3></span><span class="chev">▾</span></summary>
+    <div class="day-content">
+      <p class="tagline">Sweet Spot + prolungamento Z2 — portata a 3h totali. Niente palestra.</p>
+      <div class="col-label">🚲 Bici</div>
+      <table><tr><th>Fase</th><th>Durata</th><th>Watt</th></tr>
+      <tr><td>Warm-up</td><td class="num">25-30'</td><td class="num">progressivo</td></tr>
+      <tr><td>Opz. A (SS)</td><td class="num">1×40'</td><td class="num">216-225W</td></tr>
+      <tr><td>Opz. B (SS)</td><td class="num">2×20'</td><td class="num">216-225W</td></tr>
+      <tr><td>Z2 completamento</td><td class="num">90-100'</td><td class="num">Z2</td></tr>
+      <tr><td>Defaticamento</td><td class="num">10'</td><td class="num">facile</td></tr></table>
+      <p class="note-line" style="border:none;">Durata totale: <b>~3h</b>.</p>
+      <p class="no-session">Palestra: nessuna.</p>
+      <div class="col-label">🍽 Nutrizione</div>
+      <table><tr><th>Momento</th><th>Cosa</th><th>g</th></tr>
+      <tr><td>Colazione</td><td>6 fette bisc. + marmellata + banana + yogurt greco 170g</td><td class="num">80-100</td></tr>
+      <tr><td>Durante</td><td>1 borraccia NRGY90/h (2-3 sulle 3h)</td><td class="num">~90/h</td></tr>
+      <tr><td>Post</td><td>Whey + fette con miele</td><td class="num">60-80</td></tr>
+      <tr><td>Pranzo</td><td>Pasta/riso 90-100g + proteine + pane</td><td class="num">85-100</td></tr></table>
+      <div class="note-line">Target: <b>400-460g CHO</b> · <b>115-125g PRO</b> · 2.8-3.5L</div>
+    </div>
+  </details>
+
+  <details class="day" id="ven">
+    <summary><span class="zone-chip" style="background:var(--z-gym);opacity:.75;"></span><span class="txt"><div class="date">VEN 17/07</div><h3>Spalla ai cavi</h3></span><span class="chev">▾</span></summary>
+    <div class="day-content">
+      <p class="tagline">Deve migliorare, non affaticare. No metabolico.</p>
+      <div class="col-label">🚲 Tapis (opz.)</div>
+      <table><tr><td>20-25'</td><td class="num">Z1, 8-9km/h</td></tr></table>
+      <div class="col-label">🏋 Circuito × 3 giri</div>
+      <table><tr><th>Esercizio</th><th>Reps/Carico</th><th>Riposo</th></tr>
+      <tr><td>Extrarotazione cavo</td><td class="num">12-15/lato, 2.5-5kg</td><td class="num">20-30"</td></tr>
+      <tr><td>Face pull cavo</td><td class="num">12-15, 7.5-15kg</td><td class="num">20-30"</td></tr>
+      <tr><td>Pulldown braccia tese</td><td class="num">12, 10-20kg</td><td class="num">20-30"</td></tr>
+      <tr><td>Row alto cavo</td><td class="num">12, 7.5-15kg</td><td class="num">20-30"</td></tr>
+      <tr><td>Serratus punch</td><td class="num">12/lato</td><td class="num">20-30"</td></tr>
+      <tr><td>Pallof press</td><td class="num">10/lato</td><td class="num">20-30"</td></tr></table>
+      <p class="note-line" style="border:none;">Riposo tra giri: <b>90"</b>. Poi finisher YTW 2 giri, 6+6+6, riposo 60".</p>
+      <div class="col-label">🍽 Nutrizione</div>
+      <table><tr><th>Momento</th><th>Cosa</th><th>g</th></tr>
+      <tr><td>Colazione</td><td>5 fette bisc. + marmellata + yogurt greco 150g</td><td class="num">50-70</td></tr>
+      <tr><td>Pranzo</td><td>Pasta/riso 70-80g + pollo o prosciutto</td><td class="num">70-90</td></tr>
+      <tr><td>Cena</td><td>Riso 70g o patate 250g + proteine magre</td><td class="num">70-90</td></tr></table>
+      <div class="note-line">Target: <b>220-260g CHO</b> · <b>115-130g PRO</b> · 2.2-2.8L</div>
+    </div>
+  </details>
+
+  <details class="day" id="sab" open>
+    <summary><span class="zone-chip" style="background:var(--z-hard);"></span><span class="txt"><div class="date">SAB 18/07</div><h3>Lungo specifico</h3></span><span class="chev">▾</span></summary>
+    <div class="day-content">
+      <p class="tagline">2h30 confermate. Qualità nel finale, non massacro.</p>
+      <div class="col-label">🚲 Bici</div>
+      <table><tr><th>Fase</th><th>Durata</th><th>Watt</th></tr>
+      <tr><td>Avvio</td><td class="num">30'</td><td class="num">Z2 facile</td></tr>
+      <tr><td>Centrale</td><td class="num">70-80'</td><td class="num">Z2 medio</td></tr>
+      <tr><td>Finale gara</td><td class="num">2×15'+10-15'</td><td class="num">208-233W</td></tr>
+      <tr><td>Defaticamento</td><td class="num">10'</td><td class="num">facile</td></tr></table>
+      <p class="note-line" style="border:none;">Durata totale: <b>~2h30</b>.</p>
+      <p class="no-session">Palestra: nessuna.</p>
+      <div class="col-label">🍽 Nutrizione</div>
+      <table><tr><th>Momento</th><th>Cosa</th><th>g</th></tr>
+      <tr><td>Colazione</td><td>8 fette bisc. + marmellata/miele + banana + yogurt 170g</td><td class="num">100-130</td></tr>
+      <tr><td>Durante</td><td>1 borraccia NRGY90/h (2-3 sulle 2h30) + gel prima del finale</td><td class="num">~90/h</td></tr>
+      <tr><td>Post</td><td>Whey + pane/riso o banana</td><td class="num">70-85</td></tr>
+      <tr><td>Cena</td><td>Riso/patate 300g + proteine + verdure</td><td class="num">80-120</td></tr></table>
+      <div class="note-line">Target: <b>400-460g CHO</b> · <b>120-130g PRO</b>. Liquidi: NRGY90 copre 500ml/h, aggiungi acqua fino a 700-900ml/h se caldo.</div>
+    </div>
+  </details>
+
+  <details class="day" id="dom">
+    <summary><span class="zone-chip" style="background:var(--z-rest);opacity:.7;"></span><span class="txt"><div class="date">DOM 19/07</div><h3>Riposo totale</h3></span><span class="chev">▾</span></summary>
+    <div class="day-content">
+      <p class="tagline">Zero bici. Assorbire il carico.</p>
+      <table><tr><td>Riposo</td><td class="num">nessuna bici, nessun tapis</td></tr>
+      <tr><td>Mobilità</td><td class="num">10-15', facoltativa</td></tr></table>
+      <div class="col-label">🍽 Nutrizione</div>
+      <table><tr><th>Momento</th><th>Cosa</th><th>g</th></tr>
+      <tr><td>Colazione</td><td>3-4 fette bisc. + miele + yogurt greco 150g</td><td class="num">40-60</td></tr>
+      <tr><td>Pranzo</td><td>Pasta/riso 60-70g + proteine</td><td class="num">60-80</td></tr>
+      <tr><td>Cena</td><td>Patate 200g o pane 70g + pesce/uova/carne</td><td class="num">60-80</td></tr></table>
+      <div class="note-line">Target: <b>200-220g CHO</b> (riposo totale) · <b>115-125g PRO</b> · 2.0-2.6L</div>
+    </div>
+  </details>
+
+  <h2 class="section-title">Riferimenti rapidi</h2>
+
+  <div class="extra-block">
+    <h4>Orario di partenza</h4>
+    <p class="note-line" style="border:none;padding-top:0;margin-top:0;">Durante la bici resta comunque 1 borraccia NRGY 90/h ≈ 90g CHO/h per qualità e lungo.</p>
+    <details style="margin-top:10px;border:1px solid var(--line);border-radius:4px;">
+      <summary style="padding:10px 12px;font-family:var(--font-mono);font-size:13px;color:var(--z-endurance);">Partenza 08:00 — poco tempo</summary>
+      <div style="padding:0 12px 12px 12px;">
+        <table style="margin-bottom:0;"><tr><td style="width:75px;color:var(--text-faint);font-size:11px;">06:30-07:00</td><td>5-6 fette bisc. + marmellata + banana + yogurt greco 150g</td></tr>
+        <tr><td style="color:var(--text-faint);font-size:11px;">07:40-07:50</td><td>Top-up 20-30g: 2-3 datteri o mezza banana</td></tr>
+        <tr><td style="color:var(--text-faint);font-size:11px;">08:00</td><td>Partenza — prima borraccia NRGY90 pronta, sorso entro 10-15'</td></tr></table>
+      </div>
+    </details>
+    <details style="margin-top:8px;border:1px solid var(--line);border-radius:4px;">
+      <summary style="padding:10px 12px;font-family:var(--font-mono);font-size:13px;color:var(--z-endurance);">Partenza 11:00 — colazione vera</summary>
+      <div style="padding:0 12px 12px 12px;">
+        <table style="margin-bottom:0;"><tr><td style="width:75px;color:var(--text-faint);font-size:11px;">08:00</td><td>6-7 fette bisc. + miele/marmellata + banana + yogurt greco 170g</td></tr>
+        <tr><td style="color:var(--text-faint);font-size:11px;">10:15-10:30</td><td>Top-up 20-40g: 3-4 datteri o banana</td></tr>
+        <tr><td style="color:var(--text-faint);font-size:11px;">11:00</td><td>Partenza. Ideale per O/U e Sweet Spot</td></tr></table>
+      </div>
+    </details>
+    <details style="margin-top:8px;border:1px solid var(--line);border-radius:4px;">
+      <summary style="padding:10px 12px;font-family:var(--font-mono);font-size:13px;color:var(--z-threshold);">Partenza 13:00 — serve mini-pranzo</summary>
+      <div style="padding:0 12px 12px 12px;">
+        <table style="margin-bottom:0;"><tr><td style="width:75px;color:var(--text-faint);font-size:11px;">08:00</td><td>6-7 fette bisc. + marmellata + yogurt greco 170g</td></tr>
+        <tr><td style="color:var(--text-faint);font-size:11px;">11:00-11:30</td><td>80-100g pasta/riso in bianco o 100-120g pane + miele. Evita bresaola/prosciutto qui</td></tr>
+        <tr><td style="color:var(--text-faint);font-size:11px;">12:30-12:45</td><td>Top-up 25-45g: 2-3 datteri o gel</td></tr>
+        <tr><td style="color:var(--text-faint);font-size:11px;">13:00</td><td>Partenza. Saltare il mini-pranzo è l'errore più probabile</td></tr></table>
+      </div>
+    </details>
+    <details style="margin-top:8px;border:1px solid var(--line);border-radius:4px;">
+      <summary style="padding:10px 12px;font-family:var(--font-mono);font-size:13px;color:var(--z-hard);">Partenza 16:00 — pranzo vero + snack</summary>
+      <div style="padding:0 12px 12px 12px;">
+        <table style="margin-bottom:0;"><tr><td style="width:75px;color:var(--text-faint);font-size:11px;">08:00</td><td>5 fette bisc. + marmellata + yogurt greco 150g</td></tr>
+        <tr><td style="color:var(--text-faint);font-size:11px;">12:30-13:00</td><td>80-100g riso/pasta + bresaola o prosciutto magro + pane</td></tr>
+        <tr><td style="color:var(--text-faint);font-size:11px;">15:15-15:40</td><td>Top-up 25-50g: banana + miele o datteri</td></tr>
+        <tr><td style="color:var(--text-faint);font-size:11px;">16:00</td><td>Partenza. Post tardo: non saltarlo — whey + carbo subito, poi cena</td></tr></table>
+      </div>
+    </details>
+  </div>
+
+  <div class="extra-block">
+    <h4>Over/Under 10'</h4>
+    <div class="stat-tile"><div class="k">Under</div><div class="v">216-225W · 88-92% FTP</div></div>
+    <div class="stat-tile"><div class="k">Over</div><div class="v">245-257W · 100-105% FTP</div></div>
+    <div class="stat-tile"><div class="k">Recupero blocchi</div><div class="v">120-160W · 6'</div></div>
+  </div>
+
+  <div class="extra-block">
+    <h4>Fabbisogno liquidi</h4>
+    <div class="stat-tile"><div class="k">Normale</div><div class="v">500-750 ml/h</div></div>
+    <div class="stat-tile"><div class="k">Caldo</div><div class="v">700-1000 ml/h</div></div>
+    <div class="stat-tile"><div class="k">NRGY90 copre</div><div class="v">500 ml/h</div></div>
+    <p class="note-line" style="border:none;">Se sudi di più del previsto, aggiungi acqua pura oltre alla borraccia NRGY. Pesati prima/dopo per calibrare: 100g persi ≈ 100-150ml da reintegrare in più la volta dopo.</p>
+  </div>
+
+  <div class="extra-block" style="border-left:3px solid var(--z-threshold);">
+    <h4 style="font-size:15px;color:var(--z-endurance);">Stato aggiornamenti</h4>
+    <p class="note-line" style="border:none;padding:0;margin:0;">FTP confermata a 245W. Volume: con Gio a 3h e Sab a 2h30, totale ~9h50-10h/sett, target dichiarato 11-12h.</p>
+  </div>
+
+  <footer>Versione mobile · stessi dati della versione desktop, layout ad accordion per uso rapido in palestra/prima dell'uscita.</footer>
+</div>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
+  }
+</script>
+</body>
+</html>
