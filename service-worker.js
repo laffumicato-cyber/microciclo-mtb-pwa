@@ -1,7 +1,7 @@
-const CACHE = 'microciclo-mtb-v1';
+const CACHE = 'microciclo-mtb-v2';
 const APP_FILES = [
   './',
-  './microciclo_mtb_mobile-1.html',
+  './index.html',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png'
@@ -26,6 +26,6 @@ self.addEventListener('fetch', event => {
       const copy = response.clone();
       caches.open(CACHE).then(cache => cache.put(event.request, copy));
       return response;
-    }).catch(() => caches.match('./microciclo_mtb_mobile-1.html')))
+    }).catch(() => caches.match('./index.html')))
   );
 });
