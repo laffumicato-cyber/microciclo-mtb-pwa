@@ -1,4 +1,4 @@
-const CACHE = 'microciclo-mtb-v2';
+const CACHE = 'microciclo-mtb-v4';
 const APP_FILES = [
   './',
   './index.html',
